@@ -1,2 +1,4 @@
 #!/bin/bash
-5. head -n 10 /etc/passwd
+head -n 10 /etc/passwd
+Footer
+
