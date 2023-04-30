@@ -1,34 +1,6 @@
-# add stable version of nginx
- exec {'add nginx stable repo':
- command => 'sudo add-apt-repository ppa:nginx/stable',
- path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',  
+# Installs a Nginx server
 
-# update software packages list
- exec { 'update packages':
- command => 'apt-get update',
- path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+exec {'install':
+  provider => shell,
+  command  => 'sudo apt-get -y update ; sudo apt-get -y install nginx ; echo "Hello World!" | sudo tee /var/www/html/index.nginx-debian.html ; sudo sed -i "s/server_name _;/server_name _;\n\trewrite ^\/redirect_me https:\/\/github.com\/Tolulope05 permanent;/" /etc/nginx/sites-available/default ; sudo service nginx start',
 }
-# install nginx
- package { 'nginx':
-ensure     => 'installed',
- }
-# allow HTTP 
-  exec { 'allow HTTP':
-  command => "ufw allow 'Nginx HTTP'",
-  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-  onlyif  => '! dpkg -l nginx | egrep \'îi.*nginx\' > /dev/null 2>&1',
-# change folder rights
-  exec { 'chmod www folder':
-  command => 'chmod -R 755 /var/www',
-  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
-}
-# create index file
-  file { '/var/www/html/index.html':
-  content => "Hello World!\n",
- }
- # create index file
-   file { '/var/www/html/404.html':
-   content => "Ceci n'est pas une page\n",
- }
-# add redirection and error page
-  file { 'Nginx default config file':            
